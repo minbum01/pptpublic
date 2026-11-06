@@ -1551,6 +1551,20 @@ html.sc #stage,html.sc #hint{display:none}
 details.sxw{font-size:13px;color:#c9d6f2} details.sxw summary{cursor:pointer;color:#9ec1ff;font-weight:700}
 details.sxw p{margin:6px 0 0;line-height:1.6;white-space:pre-wrap}
 @media (max-width:900px){ .sxi{grid-template-columns:1fr} #bar h1{width:100%} }
+/* 태블릿 세로 — 한 줄 배치 · 손가락으로 누르기 쉽게 */
+@media (orientation:portrait) and (max-width:1300px){
+  .sxi{grid-template-columns:1fr;padding:18px;gap:14px}
+  #bar{padding:10px 0;gap:8px 10px} #bar h1{font-size:19px;width:auto;flex:1 0 100%}
+  #bar button,#bar select{font-size:16px;padding:11px 16px;min-height:44px}
+  #tm{font-size:20px}
+  .sxr h3{font-size:24px} .sxm{font-size:15px}
+  .sxr textarea{font-size:19px;line-height:1.7;min-height:220px}
+  .sxc{font-size:19px;gap:10px 26px} .sxc label{min-height:44px} .sxc input{width:28px;height:28px}
+  .sxx{padding:10px} .sxx .cin{flex-basis:200px;width:200px} .sxx .sxtt{font-size:17px} .sxx .sxtt b{font-size:14px}
+  .sxn{font-size:15px} .sxp{font-size:17px}
+  details.sxw{font-size:16px}
+}
+#more{display:none;width:100%;gap:8px;flex-wrap:wrap} #more.on{display:flex}
 </style>
 <div id="sc">
   <div id="bar">
@@ -1559,7 +1573,8 @@ details.sxw p{margin:6px 0 0;line-height:1.6;white-space:pre-wrap}
     <select id="jump"><option value="">장 이동</option></select>
     <button id="fAll" class="on" type="button">전체</button><button id="fTodo" type="button">안 한 것</button><button id="fStar" type="button">★만</button>
     <span id="tm">00:00</span><button id="tGo" type="button">시작</button><button id="tRe" type="button">↺</button>
-    <button id="exMd" type="button">메모 내려받기(.md)</button><button id="exJs" type="button">백업(.json)</button><button id="imJs" type="button">불러오기</button><button id="clr" type="button">체크 초기화</button>
+    <button id="mo" type="button">⋯ 더보기</button>
+    <div id="more"><button id="exMd" type="button">메모 내려받기(.md)</button><button id="exJs" type="button">백업(.json)</button><button id="imJs" type="button">불러오기</button><button id="clr" type="button">체크 초기화</button></div>
     <input id="imF" type="file" accept=".json" hidden>
   </div>
   <div id="list"></div>
@@ -1574,7 +1589,7 @@ let DB={}; try{ DB=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
 const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){} };
 const get=k=>DB[k]||(DB[k]={note:BASE[k]||'',done:false,star:false});
 const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const title=s=>{ const h=s.querySelector('.t2,.t1,.big,.tt,h1,h2'); return (h||s).textContent.trim().replace(/\s+/g,' ').slice(0,80); };
+const title=s=>{ const h=s.querySelector('.t2,.t1,.big,.tt,h1,h2')||s, ln=[...h.querySelectorAll('.ln')]; return (ln.length?ln.map(x=>x.textContent.trim()).join(' '):h.textContent).trim().replace(/\s+/g,' ').slice(0,80); };
 const words=s=>{ const c=s.cloneNode(true); c.querySelectorAll('style,script,svg').forEach(x=>x.remove());
   return [...c.querySelectorAll('div,span,li,b')].filter(e=>!e.children.length||e.matches('li,.t2 i')).map(e=>e.textContent.trim()).filter(t=>t&&t.length>1)
     .filter((t,i,a)=>a.indexOf(t)===i).join('\n').slice(0,900); };
@@ -1642,6 +1657,7 @@ imF.addEventListener('change',async()=>{ const f=imF.files[0]; if(!f) return;
   try{ const o=JSON.parse(await f.text()); if(!confirm('불러온 메모로 지금 메모를 바꿀까요?')) return; DB=o; save(); location.reload(); }catch(e){ alert('불러오기 실패: '+e.message); } });
 document.getElementById('clr').addEventListener('pointerup',()=>{ if(!confirm('체크(말했음 · ★)만 모두 지울까요? 메모는 남습니다.')) return;
   ITEMS.forEach(x=>{ x.d.done=false; x.d.star=false; x.el.querySelector('.sxd').checked=false; x.el.querySelector('.sxs').checked=false; x.el.classList.remove('done','star'); }); save(); prog(); filt(); });
+document.getElementById('mo').addEventListener('pointerup',()=>{ const m=document.getElementById('more'); m.classList.toggle('on'); document.getElementById('mo').classList.toggle('on',m.classList.contains('on')); });
 prog();
 }
 </script>
