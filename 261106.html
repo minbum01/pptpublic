@@ -274,7 +274,7 @@ function story(){
 
   /* 배경 질감 — 개편 내용이 작게 흐름 (읽을 수 있지만 주인공은 아님) */
   const FACTS=[&#x27;검정시험 전환&#x27;,&#x27;공직적격성평가 기본&#x27;,&#x27;3영역 · 영역별 25문항&#x27;,&#x27;원서 5월&#x27;,&#x27;시험 7월&#x27;,&#x27;차등 배점 첫 도입&#x27;,
-               &#x27;국가 · 지방 7급 공채 공동 활용&#x27;,&#x27;민경채&#x27;,&#x27;PSAT 원서 따로&#x27;,&#x27;2027년도 공직적격성평가 운영 방향&#x27;];
+               &#x27;국가 · 지방 7급 공채 공동 활용&#x27;,&#x27;민경채&#x27;,&#x27;PSAT 원서 따로&#x27;,&#x27;2027년도 PSAT 시험계획 공고&#x27;];
   const tex=mk(&#x27;g&#x27;,{},cam);
   for(let r=0;r&lt;11;r++){
     const k=(r*3+1)%FACTS.length, s=Array.from({length:9},(_,j)=&gt;FACTS[(k+j)%FACTS.length]).join(&#x27;      &#x27;);
@@ -687,7 +687,7 @@ b{font-weight:inherit} .y{color:var(--yel)} .abs{position:absolute}
   &lt;div class="vl fd" data-key="cv" style="left:959px;top:60px;height:960px;--o:.22">&lt;/div>
   &lt;div class="kick a">PART 1&lt;/div>
   &lt;div class="big">&lt;span class="ln" style="--d:.1s">&lt;i>2027 PSAT&lt;/i>&lt;/span>&lt;span class="ln" style="--d:.2s">&lt;i>&lt;b class="y">운영 개편&lt;/b>&lt;/i>&lt;/span>&lt;/div>
-  &lt;div class="cap sm fd" style="--d:.7s">인사혁신처 「2027년도 공직적격성평가 운영 방향」 · 2026. 8. 27.&lt;/div>
+  &lt;div class="cap sm fd" style="--d:.7s">인사혁신처 「2027년도 공직적격성평가(PSAT) 시험계획 공고」 · 2026. 11. 5.&lt;/div>
 &lt;/section>
 
 &lt;!-- 3 · 다섯 가지 한눈에 — 인트로 ②와 같은 01~05 -->
@@ -725,7 +725,7 @@ b{font-weight:inherit} .y{color:var(--yel)} .abs{position:absolute}
     &lt;div class="h">공통역량 검정시험&lt;/div>
     &lt;ul>&lt;li style="color:var(--wh)">성적 하나로 여러 공공부문 채용에 활용&lt;/li>&lt;li style="color:var(--wh)">성적증명서는 정부24에서 온라인 발급&lt;/li>&lt;/ul>
   &lt;/div>
-  &lt;div class="src fd" style="--d:.6s">출처 · 인사혁신처 「2027년도 공직적격성평가 운영 방향」 2026. 8. 27.&lt;/div>
+  &lt;div class="src fd" style="--d:.6s">출처 · 인사혁신처 공고 제2026-594호 「2027년도 PSAT 시험계획 공고」 2026. 11. 5.&lt;/div>
 &lt;/section>
 
 &lt;!-- 5 · 기본 · 심화 -->
@@ -836,18 +836,15 @@ b{font-weight:inherit} .y{color:var(--yel)} .abs{position:absolute}
   &lt;!-- 기본 -->
   &lt;div class="hub ye a" style="left:150px;top:525px;--d:.3s">&lt;div class="h">기본&lt;/div>&lt;div class="d">5월 원서 · 7월 시험&lt;/div>&lt;/div>
   &lt;div class="hl gx" data-s="1" style="left:380px;top:640px;width:50px;background:var(--yel)">&lt;/div>
-  &lt;div class="vl gy" data-s="1" style="left:430px;top:460px;height:381px;background:var(--yel);opacity:.7;--d:.15s">&lt;/div>
+  &lt;div class="vl gy" data-s="1" style="left:430px;top:460px;height:229px;background:var(--yel);opacity:.7;--d:.15s">&lt;/div>
   &lt;div data-s="1" class="fd" style="--d:.3s">
     &lt;div class="hl" style="left:430px;top:460px;width:28px;background:var(--yel)">&lt;/div>&lt;div class="hl" style="left:430px;top:536px;width:28px;background:var(--yel)">&lt;/div>
     &lt;div class="hl" style="left:430px;top:612px;width:28px;background:var(--yel)">&lt;/div>&lt;div class="hl" style="left:430px;top:688px;width:28px;background:var(--yel)">&lt;/div>
-    &lt;div class="hl" style="left:430px;top:764px;width:28px;background:var(--yel)">&lt;/div>&lt;div class="hl" style="left:430px;top:840px;width:28px;background:var(--yel)">&lt;/div>
   &lt;/div>
   &lt;div class="it a" data-s="1" style="left:470px;top:440px;--d:.3s">국가공무원 7급 공채&lt;/div>
   &lt;div class="it a" data-s="1" style="left:470px;top:516px;--d:.38s">지방공무원 7급 공채&lt;/div>
   &lt;div class="it a" data-s="1" style="left:470px;top:592px;--d:.46s">5·7급 민간경력자 일괄채용&lt;/div>
-  &lt;div class="it a" data-s="1" style="left:470px;top:668px;--d:.54s">대통령경호처 경호직 7급&lt;/div>
-  &lt;div class="it a" data-s="1" style="left:470px;top:744px;--d:.62s">기상청 기상직 7급&lt;/div>
-  &lt;div class="it a" data-s="1" style="left:470px;top:820px;--d:.7s">소방간부후보생&lt;small>2028년~ · 등&lt;/small>&lt;/div>
+  &lt;div class="it a" data-s="1" style="left:470px;top:668px;--d:.54s;color:var(--sky)">등 · 추가·변경될 수 있어요&lt;small style="color:var(--sky)">기관별 공고 확인&lt;/small>&lt;/div>
   &lt;!-- 심화 -->
   &lt;div class="hub a" data-s="2" style="left:1060px;top:525px">&lt;div class="h">심화&lt;/div>&lt;div class="d">1월 원서 · 2월 시험&lt;/div>&lt;/div>
   &lt;div class="hl gx" data-s="2" style="left:1290px;top:640px;width:45px;--d:.2s">&lt;/div>
@@ -860,7 +857,7 @@ b{font-weight:inherit} .y{color:var(--yel)} .abs{position:absolute}
   &lt;div class="it a" data-s="2" style="left:1375px;top:592px;--d:.53s">외교관후보자 선발&lt;/div>
   &lt;div class="it a" data-s="2" style="left:1375px;top:668px;--d:.61s">법원 행정고등고시&lt;/div>
   &lt;div class="it a" data-s="2" style="left:1375px;top:744px;--d:.69s">지역인재 7급 수습&lt;small>등&lt;/small>&lt;/div>
-  &lt;div class="src fd" style="--d:.7s">출처 · 인사혁신처 「2027년도 공직적격성평가 운영 방향」 2026. 8. 27. · 성적증명서는 정부24 온라인 발급&lt;/div>
+  &lt;div class="src fd" style="--d:.7s">출처 · 인사혁신처 공고 제2026-594호(2026. 11. 5.) · 활용 시험은 추가·변경될 수 있음 · 성적증명서는 정부24&lt;/div>
 &lt;/section>
 
 &lt;!-- 9 · 1부 정리 -->
@@ -1910,7 +1907,7 @@ b{font-weight:inherit} .y{color:var(--yel)} .abs{position:absolute}
   &lt;div class="col a" data-s="1" style="left:112px;top:460px;width:380px;--d:.05s">&lt;div class="rl">&lt;/div>&lt;span class="no">01&lt;/span>&lt;div class="h" style="font-size:50px">영역별 선생님&lt;/div>&lt;div class="p">언어논리 · 자료해석 · 상황판단, 영역마다 전문 선생님&lt;/div>&lt;/div>
   &lt;div class="col a" data-s="1" style="left:536px;top:460px;width:380px;--d:.15s">&lt;div class="rl">&lt;/div>&lt;span class="no">02&lt;/span>&lt;div class="h" style="font-size:50px">기출 분석 교재&lt;/div>&lt;div class="p">기초부터 실전까지 단계별 교재&lt;/div>&lt;/div>
   &lt;div class="col a" data-s="1" style="left:960px;top:460px;width:380px;--d:.25s">&lt;div class="rl">&lt;/div>&lt;span class="no">03&lt;/span>&lt;div class="h" style="font-size:50px">실전 모의고사&lt;/div>&lt;div class="p">7월 시험 전, 실전 감각을 점검&lt;/div>&lt;/div>
-  &lt;div class="col a" data-s="1" style="left:1384px;top:460px;width:380px;--d:.35s">&lt;div class="rl" style="background:var(--yel);opacity:1">&lt;/div>&lt;span class="no">04&lt;/span>&lt;div class="h" style="font-size:50px">개편 소식 정리&lt;/div>&lt;div class="p">시행계획 · 세부 일정이 나오는 대로 정리해 안내합니다&lt;/div>&lt;/div>
+  &lt;div class="col a" data-s="1" style="left:1384px;top:460px;width:380px;--d:.35s">&lt;div class="rl" style="background:var(--yel);opacity:1">&lt;/div>&lt;span class="no">04&lt;/span>&lt;div class="h" style="font-size:50px">개편 소식 정리&lt;/div>&lt;div class="p">2027년 1월 초 계획 공고가 나오면 바로 정리해 안내합니다&lt;/div>&lt;/div>
 &lt;/section>
 
 &lt;!-- 18 · 질문 + 설문 QR (한 장) — 상담 신청 QR은 넣지 않음 -->
