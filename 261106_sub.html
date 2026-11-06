@@ -1526,45 +1526,45 @@ html.sc #stage,html.sc #hint{display:none}
 #bar button.on{background:#FFC83D;color:#0B1F4D;border-color:#FFC83D}
 #bar select option{color:#000}
 #tm{font:800 16px/1 "Pretendard",sans-serif;font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
-.sxp{margin:34px 0 10px;font-size:15px;font-weight:800;color:#FFC83D;letter-spacing:2px}
-.sxi{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;padding:16px;margin:0 0 14px;border:1.5px solid rgba(158,193,255,.28);border-radius:12px;background:rgba(158,193,255,.04);scroll-margin-top:70px}
+.sxp{margin:30px 0 10px;font-size:15px;font-weight:800;color:#FFC83D;letter-spacing:2px}
+.sxi{padding:14px 16px 12px;margin:0 0 12px;border:1.5px solid rgba(158,193,255,.28);border-radius:12px;background:rgba(158,193,255,.04);scroll-margin-top:80px}
 .sxi.done{border-color:rgba(255,200,61,.55);background:rgba(255,200,61,.05)}
-.sxi.star{box-shadow:inset 4px 0 0 #FFC83D}
+.sxi.star{box-shadow:inset 5px 0 0 #FFC83D}
 .sxi.hide{display:none}
-.sxn{font-size:13px;font-weight:800;color:#9ec1ff;letter-spacing:1px;margin-bottom:6px}
+.sxh{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;margin-bottom:10px}
+.sxn{font-size:15px;font-weight:800;color:#9ec1ff;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.sxtl{flex:1;min-width:200px;font-size:19px;font-weight:800;letter-spacing:-.4px;line-height:1.35}
+.sxm{font-size:13px;font-weight:700;color:#9ec1ff;white-space:nowrap}
+.sxc{display:flex;gap:6px}
+.sxc label{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid rgba(158,193,255,.45);border-radius:999px;font-size:15px;font-weight:700;cursor:pointer;user-select:none}
+.sxc input{position:absolute;opacity:0;pointer-events:none}
+.sxc label:has(input:checked){background:#FFC83D;color:#0B1F4D;border-color:#FFC83D}
+.sxb{display:grid;grid-template-columns:var(--th,300px) minmax(0,1fr);gap:14px;align-items:start}
 .cin{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:8px;border:1px solid rgba(158,193,255,.35);background:radial-gradient(ellipse 95% 95% at 22% 18%,#10224f 0,#071434 55%,#040a1f 100%)}
 .cin>.box{position:absolute;left:0;top:0;width:1920px;height:1080px;transform:scale(var(--ck,.2));transform-origin:0 0}
 .cin .slide{visibility:visible}
 .cin *,.cin *::before,.cin *::after{transition:none!important;animation:none!important}
-.sxx{display:flex;gap:10px;align-items:center;margin-top:10px;padding:8px;border-radius:8px;background:rgba(158,193,255,.07);cursor:pointer}
-.sxx .cin{flex:0 0 150px;width:150px}
-.sxx .sxtt{font-size:14px;font-weight:600;line-height:1.4;color:#c9d6f2}
-.sxx .sxtt b{display:block;font-size:12px;color:#9ec1ff;letter-spacing:1px;margin-bottom:2px}
-.sxr{display:flex;flex-direction:column;gap:10px;min-width:0}
-.sxr h3{margin:0;font-size:20px;font-weight:800;line-height:1.35;letter-spacing:-.4px}
-.sxr .sxm{font-size:13px;font-weight:600;color:#9ec1ff}
-.sxr textarea{flex:1;min-height:170px;width:100%;box-sizing:border-box;resize:vertical;padding:12px;border-radius:8px;border:1.5px solid rgba(158,193,255,.4);background:#071434;color:#fff;font:500 16px/1.65 "Pretendard",sans-serif}
-.sxr textarea:focus{outline:none;border-color:#FFC83D}
-.sxc{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:15px;font-weight:700}
-.sxc label{display:flex;align-items:center;gap:7px;cursor:pointer}
-.sxc input{width:20px;height:20px;accent-color:#FFC83D}
-details.sxw{font-size:13px;color:#c9d6f2} details.sxw summary{cursor:pointer;color:#9ec1ff;font-weight:700}
-details.sxw p{margin:6px 0 0;line-height:1.6;white-space:pre-wrap}
-@media (max-width:900px){ .sxi{grid-template-columns:1fr} #bar h1{width:100%} }
-/* 태블릿 세로 — 한 줄 배치 · 손가락으로 누르기 쉽게 */
+.sxb>.cin{cursor:zoom-in}
+.sxi textarea{width:100%;min-height:calc(var(--th,300px)*9/16);box-sizing:border-box;resize:none;overflow:hidden;padding:10px 14px;border-radius:8px;border:1.5px solid rgba(158,193,255,.3);background:#071434;color:#fff;font:500 20px/1.7 "Pretendard",sans-serif}
+.sxi textarea:focus{outline:none;border-color:#FFC83D}
+.sxx{display:flex;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(158,193,255,.3);font-size:15px;font-weight:600;color:#c9d6f2;cursor:pointer}
+.sxx b{color:#9ec1ff;font-weight:800;white-space:nowrap}
+.sxx .cin{flex:0 0 96px;width:96px;border-radius:4px}
+#zoom{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.82);cursor:zoom-out}
+#zoom.on{display:flex} #zoom .cin{width:min(100%,calc((100vh - 32px)*16/9))}
+#more{display:none;width:100%;gap:8px;flex-wrap:wrap} #more.on{display:flex}
+@media (max-width:700px){ .sxb{grid-template-columns:1fr} #bar h1{width:100%} }
+/* 태블릿 세로 — 메모 크게 · 누르기 쉽게 */
 @media (orientation:portrait) and (max-width:1300px){
-  .sxi{grid-template-columns:1fr;padding:18px;gap:14px}
-  #bar{padding:10px 0;gap:8px 10px} #bar h1{font-size:19px;width:auto;flex:1 0 100%}
+  #sc{--th:250px}
+  #bar{padding:10px 0;gap:8px 10px} #bar h1{font-size:19px;flex:1 0 100%}
   #bar button,#bar select{font-size:16px;padding:11px 16px;min-height:44px}
   #tm{font-size:20px}
-  .sxr h3{font-size:24px} .sxm{font-size:15px}
-  .sxr textarea{font-size:19px;line-height:1.7;min-height:220px}
-  .sxc{font-size:19px;gap:10px 26px} .sxc label{min-height:44px} .sxc input{width:28px;height:28px}
-  .sxx{padding:10px} .sxx .cin{flex-basis:200px;width:200px} .sxx .sxtt{font-size:17px} .sxx .sxtt b{font-size:14px}
-  .sxn{font-size:15px} .sxp{font-size:17px}
-  details.sxw{font-size:16px}
+  .sxtl{font-size:21px} .sxn{font-size:16px}
+  .sxc label{font-size:17px;padding:10px 16px;min-height:44px;box-sizing:border-box}
+  .sxi textarea{font-size:22px;line-height:1.65}
+  .sxx{font-size:17px} .sxx .cin{flex-basis:120px;width:120px}
 }
-#more{display:none;width:100%;gap:8px;flex-wrap:wrap} #more.on{display:flex}
 </style>
 <div id="sc">
   <div id="bar">
@@ -1607,37 +1607,43 @@ ITEMS.forEach((it,i)=>{
   const top=(it.part||'').split(' · ')[0];
   if(top!==lastPart){ lastPart=top; L.insertAdjacentHTML('beforeend','<div class="sxp">'+esc(top)+'</div>'); J.insertAdjacentHTML('beforeend','<option value="'+it.k+'">'+esc(it.no.split(' ')[0]+' · '+top)+'</option>'); }
   const d=get(it.k), el=document.createElement('div'); el.className='sxi'; el.id=it.k;
-  const left=document.createElement('div');
-  left.innerHTML='<div class="sxn">'+esc(it.no)+(it.part?' · '+esc(it.part):'')+'</div>';
-  if(it.s) left.appendChild(shot(it.s)); else left.insertAdjacentHTML('beforeend','<div class="cin" style="display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#FFC83D">인트로 영상</div>');
+  el.innerHTML='<div class="sxh"><span class="sxn">'+esc(it.no.split(' ')[0])+'</span><span class="sxtl">'+esc(it.ttl)+'</span>'+
+    '<span class="sxm">'+(it.s?(it.steps?'클릭 '+it.steps+'번':'한 번에'):'영상')+'</span>'+
+    '<span class="sxc"><label><input type="checkbox" class="sxd">✓ 말했음</label><label><input type="checkbox" class="sxs">★</label></span></div>'+
+    '<div class="sxb"></div>';
+  const bx=el.querySelector('.sxb');
+  if(it.s){ const th=shot(it.s); th.addEventListener('pointerup',()=>zoom(it.s)); bx.appendChild(th); }
+  else bx.insertAdjacentHTML('beforeend','<div class="cin" style="display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#FFC83D">인트로 영상</div>');
+  const ta=document.createElement('textarea'); ta.placeholder='할 말을 적어 두세요 (자동 저장)'; bx.appendChild(ta);
   const nx=ITEMS[i+1];
-  if(nx){ const n=document.createElement('div'); n.className='sxx'; n.title='다음 장으로 이동';
+  if(nx){ const n=document.createElement('div'); n.className='sxx';
     if(nx.s) n.appendChild(shot(nx.s));
-    n.insertAdjacentHTML('beforeend','<div class="sxtt"><b>다음 → '+esc(nx.no)+'</b>'+esc(nx.ttl)+'</div>');
+    n.insertAdjacentHTML('beforeend','<b>다음 → '+esc(nx.no.split(' ')[0])+'</b><span>'+esc(nx.ttl)+'</span>');
     n.addEventListener('pointerup',()=>document.getElementById(nx.k).scrollIntoView({behavior:'smooth'}));
-    left.appendChild(n); }
-  const rt=document.createElement('div'); rt.className='sxr';
-  rt.innerHTML='<h3>'+esc(it.ttl)+'</h3><div class="sxm">'+(it.s?(it.steps?'클릭 '+it.steps+'번으로 펼침':'클릭 없이 한 번에 펼침'):'영상')+'</div>'+
-    '<textarea placeholder="여기에 할 말을 적어 두세요 (자동 저장)"></textarea>'+
-    '<div class="sxc"><label><input type="checkbox" class="sxd">말했음 ✓</label><label><input type="checkbox" class="sxs">★ 다시 볼 것</label></div>'+
-    (it.s?'<details class="sxw"><summary>화면 글자 보기</summary><p>'+esc(words(it.s))+'</p></details>':'');
-  const ta=rt.querySelector('textarea'), cd=rt.querySelector('.sxd'), cs=rt.querySelector('.sxs');
+    el.appendChild(n); }
+  const cd=el.querySelector('.sxd'), cs=el.querySelector('.sxs');
+  const grow=()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+3+'px'; };
   ta.value=d.note; cd.checked=d.done; cs.checked=d.star;
   const paint=()=>{ el.classList.toggle('done',d.done); el.classList.toggle('star',d.star); };
-  ta.addEventListener('input',()=>{ d.note=ta.value; save(); });
+  ta.addEventListener('input',()=>{ d.note=ta.value; save(); grow(); });
   cd.addEventListener('change',()=>{ d.done=cd.checked; save(); paint(); prog(); filt(); });
   cs.addEventListener('change',()=>{ d.star=cs.checked; save(); paint(); filt(); });
-  paint(); el.append(left,rt); L.appendChild(el); it.el=el; it.d=d;
+  paint(); L.appendChild(el); it.el=el; it.d=d; it.grow=grow;
 });
+// 썸네일 누르면 크게
+const Z=document.createElement('div'); Z.id='zoom'; document.body.appendChild(Z);
+function zoom(s){ Z.innerHTML=''; Z.appendChild(shot(s)); Z.classList.add('on'); requestAnimationFrame(fit); }
+Z.addEventListener('pointerup',()=>Z.classList.remove('on'));
 const fit=()=>document.querySelectorAll('.cin').forEach(c=>c.style.setProperty('--ck',c.clientWidth/1920));
-addEventListener('resize',fit); requestAnimationFrame(fit); setTimeout(fit,500);
+const growAll=()=>ITEMS.forEach(x=>x.grow());
+addEventListener('resize',()=>{ fit(); growAll(); }); requestAnimationFrame(()=>{ fit(); growAll(); }); setTimeout(()=>{ fit(); growAll(); },500);
 function prog(){ const n=ITEMS.filter(x=>x.d.done).length; document.getElementById('pgi').style.width=(n/ITEMS.length*100)+'%';
   document.getElementById('pgt').textContent='말한 장 '+n+' / '+ITEMS.length; }
 let F='all';
 function filt(){ ITEMS.forEach(x=>x.el.classList.toggle('hide',F==='todo'?x.d.done:F==='star'?!x.d.star:false)); }
 const fb={all:'fAll',todo:'fTodo',star:'fStar'};
 Object.entries(fb).forEach(([k,id])=>document.getElementById(id).addEventListener('pointerup',()=>{ F=k;
-  Object.values(fb).forEach(b=>document.getElementById(b).classList.toggle('on',b===id)); filt(); requestAnimationFrame(fit); }));
+  Object.values(fb).forEach(b=>document.getElementById(b).classList.toggle('on',b===id)); filt(); requestAnimationFrame(()=>{ fit(); growAll(); }); }));
 J.addEventListener('change',()=>{ if(J.value){ F='all'; filt(); document.getElementById(J.value).scrollIntoView({behavior:'smooth'}); J.value=''; } });
 // 발표 시간 재기
 let t0=null, acc=0, tid=null; const tm=document.getElementById('tm'), tg=document.getElementById('tGo');
