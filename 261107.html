@@ -1101,7 +1101,8 @@
   /* ===== 판서(주석) ===== */
   /* ── 판서 v2 ── */
   /* 판서 — 송지훈 덱과 같은 도구줄 */
-  #penCanvas,#penLive{position:absolute;inset:0;width:1280px;height:720px;z-index:95;pointer-events:none;touch-action:none}
+  #penCanvas,#penPred,#penLive{position:absolute;inset:0;width:1280px;height:720px;z-index:95;pointer-events:none;touch-action:none}
+  #penPred{z-index:96}
   #penLive{z-index:96}
   #penLive.on{pointer-events:auto;cursor:crosshair}
   body.erasing #penLive.on{cursor:cell}
@@ -5744,6 +5745,7 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
     <!-- 판서 v2: 커밋 캔버스 + 라이브 캔버스 + 우측 고정 도구바 -->
     <div id="penBoard"></div>
     <canvas id="penCanvas" width="1280" height="720"></canvas>
+    <canvas id="penPred" width="1280" height="720"></canvas>
     <canvas id="penLive" width="1280" height="720"></canvas>
 
     <!-- 이미지(image1/image3) 편집 도구 -->
@@ -5963,6 +5965,11 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
       }).observe(w.document.getElementById('stage'),{attributes:true,attributeFilter:['class'],subtree:true});
       const NEXT=['ArrowRight','ArrowDown','PageDown',' ','Enter','n','N'], PREV=['ArrowLeft','ArrowUp','PageUp','Backspace','p','P'];
       const busy=()=>{ const b=w.document.body; return b.classList.contains('pen')||b.classList.contains('editing'); };
+      w.addEventListener('contextmenu',e=>{
+        if(e.pointerType!=='touch') return;             // 진짜 마우스 오른쪽은 원본대로 '이전 장'
+        e.preventDefault(); e.stopImmediatePropagation();
+        if(e.target&&e.target.dispatchEvent) e.target.dispatchEvent(new w.MouseEvent('click',{bubbles:true,cancelable:true,view:w,clientX:e.clientX,clientY:e.clientY}));
+      },true);
       w.addEventListener('keydown',e=>{                 // 안에 포커스가 있을 때: 끝/처음에서만 바깥 장으로
         if(!e.isTrusted||e.altKey||e.ctrlKey||e.metaKey||busy()) return;
         const st=sjState(w);
@@ -6443,7 +6450,12 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
     const penbar=document.getElementById('penbar'), toggleBtn=document.getElementById('penToggle');
     const wrap=document.getElementById('stageWrap');
     if(!inkC||!liveC||!penbar) return;
-    const ictx=inkC.getContext('2d'), lctx=liveC.getContext('2d');
+    const predC=document.getElementById('penPred');
+    const LOWLAT=!/[?&]lowlat=0/.test(location.search), CTX=LOWLAT?{desynchronized:true}:undefined;   // 화면 합성을 기다리지 않는 캔버스
+    const ictx=inkC.getContext('2d'), lctx=liveC.getContext('2d',CTX), pctx=predC.getContext('2d',CTX);
+    const HAS_RAW='onpointerrawupdate' in window;      // 프레임을 기다리지 않고 입력이 오는 즉시 받기
+    window.__penRaw=HAS_RAW;
+    let stageRect=null;                                // 이동마다 위치를 다시 계산하지 않게 보관
     const K=1280/1600;                                 // 송지훈 덱(1600 기준) 굵기를 이 덱(1280 기준)으로
     let tool='pen', penColor='#FF5A5A', penW=7*K, penSeen=false, active={}, inkScale=1;
     const store={};                                    // slideId → {ink:[], hist:[]}
@@ -6469,20 +6481,42 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
 
     function inkResize(){
       const k=stage.getBoundingClientRect().width/1280||1, d=window.devicePixelRatio||1; inkScale=k*d;
-      [inkC,liveC].forEach(c=>{ c.width=Math.max(1,Math.round(1280*inkScale)); c.height=Math.max(1,Math.round(720*inkScale)); });
+      stageRect=stage.getBoundingClientRect();
+      [inkC,liveC,predC].forEach(c=>{ c.width=Math.max(1,Math.round(1280*inkScale)); c.height=Math.max(1,Math.round(720*inkScale)); });
       inkRedraw(); liveRedraw();
     }
-    function strokePath(ctx,st){
+    function strokePath(ctx,st,opaque){
       const p=st.pts, o=viewOff(); ctx.save(); ctx.setTransform(inkScale,0,0,inkScale,-o[0]*inkScale,-o[1]*inkScale);
-      ctx.globalAlpha=st.t==='hl'?0.45:1; ctx.strokeStyle=st.c; ctx.lineWidth=st.w; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.globalAlpha=(st.t==='hl'&&!opaque)?0.45:1; ctx.strokeStyle=st.c; ctx.lineWidth=st.w; ctx.lineCap='round'; ctx.lineJoin='round';
       ctx.beginPath(); ctx.moveTo(p[0],p[1]);
       if(p.length<=4){ ctx.lineTo(p[p.length-2]+0.01,p[p.length-1]); }
       else { for(let i=2;i<p.length-2;i+=2){ ctx.quadraticCurveTo(p[i],p[i+1],(p[i]+p[i+2])/2,(p[i+1]+p[i+3])/2); } ctx.lineTo(p[p.length-2],p[p.length-1]); }
       ctx.stroke(); ctx.restore();
     }
     function inkRedraw(){ ictx.setTransform(1,0,0,1,0,0); ictx.clearRect(0,0,inkC.width,inkC.height); cur().ink.forEach(st=>strokePath(ictx,st)); }
-    function liveRedraw(){ lctx.setTransform(1,0,0,1,0,0); lctx.clearRect(0,0,liveC.width,liveC.height); for(const id in active){ if(active[id].pts) strokePath(lctx,active[id]); } }
-    function toStage(e){ const r=stage.getBoundingClientRect(), k=r.width/1280, o=viewOff(); return [(e.clientX-r.left)/k+o[0],(e.clientY-r.top)/k+o[1]]; }
+    function liveRedraw(){ lctx.setTransform(1,0,0,1,0,0); lctx.clearRect(0,0,liveC.width,liveC.height); for(const id in active){ if(active[id].pts) strokePath(lctx,active[id],true); } drawTails(); }
+    /* 획 전체를 다시 그리지 않고 새 구간만 그림 — 선이 길어져도 느려지지 않음 */
+    function penStyle(ctx,st){
+      const o=viewOff(); ctx.setTransform(inkScale,0,0,inkScale,-o[0]*inkScale,-o[1]*inkScale);
+      ctx.strokeStyle=st.c; ctx.lineWidth=st.w; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.globalAlpha=1;
+    }
+    function drawSeg(st){
+      const p=st.pts, n=p.length; if(n<6) return;
+      const cx=p[n-4], cy=p[n-3], sx=n===6?p[0]:(p[n-6]+cx)/2, sy=n===6?p[1]:(p[n-5]+cy)/2;
+      penStyle(lctx,st); lctx.beginPath(); lctx.moveTo(sx,sy); lctx.quadraticCurveTo(cx,cy,(cx+p[n-2])/2,(cy+p[n-1])/2); lctx.stroke();
+    }
+    function drawTails(){                               // 마지막 구간 + 예측 점: 매번 지우고 다시 그리는 짧은 꼬리
+      pctx.setTransform(1,0,0,1,0,0); pctx.clearRect(0,0,predC.width,predC.height);
+      for(const id in active){
+        const st=active[id], p=st.pts; if(!p||p.length<2) continue;
+        const n=p.length; penStyle(pctx,st); pctx.beginPath();
+        if(n>=4) pctx.moveTo((p[n-4]+p[n-2])/2,(p[n-3]+p[n-1])/2); else pctx.moveTo(p[0],p[1]);
+        pctx.lineTo(p[n-2],p[n-1]);
+        if(st.pred) for(let i=0;i<st.pred.length;i+=2) pctx.lineTo(st.pred[i],st.pred[i+1]);
+        pctx.stroke();
+      }
+    }
+    function toStage(e){ const r=stageRect||(stageRect=stage.getBoundingClientRect()), k=r.width/1280, o=viewOff(); return [(e.clientX-r.left)/k+o[0],(e.clientY-r.top)/k+o[1]]; }
     function segDist(px,py,x1,y1,x2,y2){ const dx=x2-x1,dy=y2-y1,l=dx*dx+dy*dy,t=l?Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/l)):0,qx=x1+t*dx-px,qy=y1+t*dy-py; return Math.sqrt(qx*qx+qy*qy); }
     function eraseAt(x,y){
       const s=cur(); let hit=false;
@@ -6500,7 +6534,9 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
     const GESTURE_WIN=200;                             // 두 번째 손가락이 이 안에 닿아야 제스처 — 늦으면 손바닥으로 보고 무시
     let gesture=null, touchT=0;
     function resetTouch(){ touchPts.clear(); panning=false; gesture=null; }
+    let lastClickAt=0;
     function clickAt(cx,cy){                           // 펜 캔버스 아래에 있는 것을 누른 것으로 처리
+      lastClickAt=performance.now();
       const pe=liveC.style.pointerEvents; liveC.style.pointerEvents='none';
       const el=document.elementFromPoint(cx,cy); liveC.style.pointerEvents=pe;
       if(!el) return;
@@ -6523,6 +6559,7 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
     const centroid=()=>{ let x=0,y=0; touchPts.forEach(v=>{x+=v[0];y+=v[1];}); return [x/touchPts.size,y/touchPts.size]; };
     liveC.addEventListener('pointerdown',e=>{
       if(!penOn||e.button>0) return;
+      stageRect=stage.getBoundingClientRect();
       if(boardOn&&e.pointerType==='touch'){
         touchPts.set(e.pointerId,[e.clientX,e.clientY]);
         if(penSeen||touchPts.size>=2){
@@ -6547,7 +6584,8 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
       e.preventDefault(); try{ liveC.setPointerCapture(e.pointerId); }catch(_){}
       const xy=toStage(e);
       if(tool==='eraser'){ active[e.pointerId]={erase:true}; eraseAt(xy[0],xy[1]); return; }
-      active[e.pointerId]={t:tool,c:penColor,w:tool==='hl'?26*K:penW,pts:[xy[0],xy[1]]}; liveRedraw();
+      liveC.style.opacity=predC.style.opacity=tool==='hl'?'.45':'';
+      active[e.pointerId]={t:tool,c:penColor,w:tool==='hl'?26*K:penW,pts:[xy[0],xy[1]]}; drawTails();
     });
     liveC.addEventListener('pointermove',e=>{
       if(touchPts.has(e.pointerId)) touchPts.set(e.pointerId,[e.clientX,e.clientY]);
@@ -6562,14 +6600,25 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
         panBy((c[0]-panLast[0])/k,(c[1]-panLast[1])/k); panLast=c; return;
       }
       const a=active[e.pointerId]; if(!a) return; e.preventDefault();
-      let evs=(e.getCoalescedEvents&&e.getCoalescedEvents())||[]; if(!evs.length) evs=[e];
-      evs.forEach(ev=>{ const xy=toStage(ev);
-        if(a.erase) eraseAt(xy[0],xy[1]);
-        else { const p=a.pts; if(Math.abs(xy[0]-p[p.length-2])+Math.abs(xy[1]-p[p.length-1])>0.8*K) p.push(xy[0],xy[1]); } });
-      if(!a.erase) liveRedraw();
+      if(!HAS_RAW) inkMove(e);
+      if(!a.erase&&e.getPredictedEvents){               // 다음 위치 예측(최대 2점) — 체감 지연 감소
+        const pr=e.getPredictedEvents().slice(0,2); a.pred=[]; pr.forEach(ev=>{ const xy=toStage(ev); a.pred.push(xy[0],xy[1]); });
+        drawTails();
+      }
     });
+    function inkMove(e){
+      const a=active[e.pointerId]; if(!a) return;
+      let evs=(e.getCoalescedEvents&&e.getCoalescedEvents())||[]; if(!evs.length) evs=[e];
+      for(let i=0;i<evs.length;i++){ const xy=toStage(evs[i]);
+        if(a.erase) eraseAt(xy[0],xy[1]);
+        else { const p=a.pts; if(Math.abs(xy[0]-p[p.length-2])+Math.abs(xy[1]-p[p.length-1])>0.8*K){ p.push(xy[0],xy[1]); drawSeg(a); } } }
+      if(!a.erase){ a.pred=null; drawTails(); }
+    }
+    if(HAS_RAW) liveC.addEventListener('pointerrawupdate',e=>{ if(panning||gesture) return; inkMove(e); });
     function endStroke(e){
       const a=active[e.pointerId]; if(!a) return; delete active[e.pointerId];
+      if(e.type==='pointercancel'&&a.pts&&a.pts.length<=6){ liveRedraw(); return; }
+      delete a.pred;
       if(!a.erase){ const s=cur(); s.ink.push(a); s.hist.push({op:'add',st:a}); strokePath(ictx,a); save(); }
       liveRedraw();
     }
@@ -6581,6 +6630,18 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
     }
     liveC.addEventListener('pointerup',e=>{ liftTouch(e); endStroke(e); });
     liveC.addEventListener('pointercancel',e=>{ liftTouch(e); endStroke(e); });
+    /* 윈도우가 두 손가락 탭을 오른쪽 클릭으로 바꿔 보내는 경우 — 메뉴를 막고 클릭으로 처리 */
+    window.addEventListener('contextmenu',e=>{
+      e.preventDefault();
+      const touch=e.pointerType==='touch';
+      if(!penOn&&!touch) return;                       // 펜 꺼짐 + 진짜 마우스 오른쪽 = 메뉴만 막음
+      if(boardOn) return;                              // 칠판에는 누를 것이 없음
+      if(performance.now()-lastClickAt<600) return;    // 제스처로 이미 눌렀음
+      if(touchPts.size===1&&e.timeStamp-touchT>700) return;   // 한 손가락을 오래 누른 것 = 클릭 아님
+      for(const id in active){ if(active[id].pts&&active[id].pts.length>6) return; }   // 선을 긋는 중이면 무시
+      for(const id in active) delete active[id]; liveRedraw();
+      clickAt(e.clientX,e.clientY);
+    },true);
     liveC.addEventListener('wheel',e=>{ if(!penOn||!boardOn) return; e.preventDefault(); panBy(-e.deltaX,-e.deltaY); },{passive:false});   // PC: 휠로 칠판 밀기
     function inkUndo(){
       const s=cur(), h=s.hist.pop(); if(!h) return;
@@ -6656,6 +6717,18 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
 
     window.addEventListener('resize',()=>{ pad(); inkResize(); });
     pad();
+    if(/[?&]pendebug=1/.test(location.search)){        // 측정 표시: 입력→처리 지연 · 화면 갱신 간격 (같은 터치로 빈 화면 테스트와 비교)
+      const hud=document.createElement('div');
+      hud.style.cssText='position:fixed;left:12px;top:12px;z-index:300;background:#061a45;color:#fff;font:700 18px/1.5 "Malgun Gothic",sans-serif;padding:12px 16px;border-radius:12px;pointer-events:none;white-space:pre';
+      hud.textContent='덱 측정 · 펜을 켜고 그어 보세요'; document.body.appendChild(hud);
+      let dl=[],fr=[],lf=0,on=false;
+      const avg=x=>x.length?x.reduce((m,n)=>m+n,0)/x.length:0;
+      const show=()=>{ hud.textContent='덱 측정 · 저지연 '+(lctx.getContextAttributes&&lctx.getContextAttributes().desynchronized?'켜짐':'꺼짐')+'\n입력→처리 평균 '+avg(dl).toFixed(1)+'ms · 최대 '+Math.max(0,...dl).toFixed(0)+'ms\n화면 갱신 평균 '+avg(fr).toFixed(1)+'ms · 최대 '+Math.max(0,...fr).toFixed(0)+'ms\n밀린 프레임(25ms↑) '+fr.filter(f=>f>25).length+' / '+fr.length; };
+      liveC.addEventListener('pointerdown',()=>{ dl=[];fr=[];lf=0;on=true; },true);
+      liveC.addEventListener(HAS_RAW?'pointerrawupdate':'pointermove',e=>{ if(on) dl.push(performance.now()-e.timeStamp); },true);
+      const stop=()=>{ on=false; show(); }; liveC.addEventListener('pointerup',stop,true); liveC.addEventListener('pointercancel',stop,true);
+      (function loop(t){ if(on&&lf) fr.push(t-lf); lf=t; if(on&&fr.length%15===0) show(); requestAnimationFrame(loop); })(0);
+    }
     window.__penDebug=()=>({on:penOn, board:boardOn, off:viewOff(), n:cur().ink.length, canvas:inkC.width+'x'+inkC.height, wrapRight:wrap.style.right});
     inkResize();
   }
