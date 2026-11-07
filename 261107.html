@@ -1112,6 +1112,7 @@
   body:not(.pen) #penbar [data-tool].sel{background:none;box-shadow:none}
   #penbar .tx{border-radius:12px;font-size:11px;font-weight:800;line-height:1.15;text-align:center;white-space:normal;word-break:keep-all}
   #penbar #penToggle.on{background:#FFD966;color:#042A54}
+  #penbar [data-a="clearAll"].arm{background:#e03131;color:#fff}
   #penbar #magBtn.on,#penbar #pageBtn.on,#penbar #jumpBtn.on{background:rgba(255,217,102,.25);box-shadow:inset 0 0 0 2px #FFD966}
   #penBoard{position:absolute;inset:0;z-index:94;display:none;background-color:#fbfbf8;background-image:linear-gradient(#e4e8f0 1px,transparent 1px);background-size:100% 48px}
   #penBoard.show{display:block}
@@ -5776,6 +5777,7 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
   <button class="pt" data-w="12" title="굵게"><span class="wdot" style="width:17px;height:17px"></span></button>
   <button class="pt" data-a="undo" title="되돌리기 (Ctrl+Z)"><svg><use href="#i-undo"></use></svg></button>
   <button class="pt" data-a="clear" title="이 장의 필기 모두 지우기"><svg><use href="#i-trash"></use></svg></button>
+  <button class="pt tx" data-a="clearAll" title="모든 장 · 모든 칠판의 필기 지우기 (두 번 눌러 확인)">전체<br>지움</button>
   <button class="pt" data-a="board" title="빈 칠판 — 이 장 위에 흰 칠판을 덮고 따로 쓴다(다시 누르면 슬라이드로)"><svg><use href="#i-board"></use></svg></button>
   <button id="prev" title="이전 장" style="font-size:18px">◀</button>
   <button id="next" title="다음 장" style="font-size:18px">▶</button>
@@ -6609,13 +6611,19 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
       else if(h.op==='clear'){ s.ink=h.list.concat(s.ink); }
       inkRedraw(); save();
     }
+    function inkClearAll(){                             // 모든 장 · 모든 칠판 (송지훈 원본 덱 자체 펜 필기 포함)
+      for(const id in store) delete store[id];
+      active={}; liveRedraw(); inkRedraw(); save();
+      const w=sjDeck();
+      if(w){ try{ w.document.querySelectorAll('#stage .slide').forEach(x=>{ if(!x.classList.contains('active')){ x._ink=[]; x._hist=[]; } }); w.deck.inkClear(); }catch(_){} }
+    }
     function inkClear(){ const s=cur(); if(!s.ink.length) return; s.hist.push({op:'clear',list:s.ink}); s.ink=[]; inkRedraw(); save(); }
     penClear=inkClear;
     penSlide=()=>{ if(boardOn) setBoard(false); active={}; liveRedraw(); inkRedraw(); };   // 장을 넘기면 칠판은 닫힘(내용은 보존)
 
     /* 펜 도구줄은 슬라이드 위에 떠 있다(오른쪽 기본 · ⇄ 로 왼쪽) — 슬라이드 크기는 그대로 */
     function penLayout(){ const n=[...penbar.querySelectorAll('button')].filter(b=>getComputedStyle(b).display!=='none').length, g=4, avail=window.innerHeight-36; let s=Math.min(40,Math.floor((avail-(n-1)*g)/n)), rows=n;
-      if(s<30){ s=40; rows=Math.min(14,Math.max(4,Math.floor((avail+g)/(s+g)))); }
+      if(s<30){ s=40; rows=Math.min(15,Math.max(4,Math.floor((avail+g)/(s+g)))); }
       penbar.style.setProperty('--pbs',s+'px'); penbar.style.gridTemplateRows='repeat('+rows+','+s+'px)';
     }
     function pad(){ penLayout(); }
@@ -6636,6 +6644,10 @@ mark{box-shadow:inset 0 -.42em 0 var(--v-ln)}
       if(c){ penColor=c; if(tool==='eraser') setTool('pen'); penbar.querySelectorAll('[data-color]').forEach(x=>x.classList.toggle('sel',x===b)); }
       else if(w){ penW=+w*K; if(tool!=='pen') setTool('pen'); penbar.querySelectorAll('[data-w]').forEach(x=>x.classList.toggle('sel',x===b)); }
       else if(t) setTool(t);
+      else if(a==='clearAll'){                          // 되돌릴 수 없어 두 번 눌러야 지움
+        if(b.classList.contains('arm')){ clearTimeout(b._t); b.classList.remove('arm'); b.innerHTML='전체<br>지움'; inkClearAll(); }
+        else { b.classList.add('arm'); b.innerHTML='한번<br>더'; b._t=setTimeout(()=>{ b.classList.remove('arm'); b.innerHTML='전체<br>지움'; },2500); }
+      }
       else if(a==='undo') inkUndo(); else if(a==='clear') inkClear(); else if(a==='board') setBoard(!boardOn);
       else if(a==='flip'){ penbar.classList.toggle('left'); document.body.classList.toggle('barLeft',penbar.classList.contains('left')); pad(); }
     });
